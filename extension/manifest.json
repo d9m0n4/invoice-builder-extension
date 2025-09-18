@@ -15,8 +15,13 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://*.aliexpress.com/*", "*://*.aliexpress.ru/*"],
-      "js": ["content-aliexpress.js"],
+      "matches": [
+        "*://*.aliexpress.com/*",
+        "*://*.aliexpress.ru/*",
+        "*://*.ebay.com/*",
+        "*://*.amazon.com/*"
+      ],
+      "js": ["content.js"],
       "run_at": "document_idle"
     }
   ],

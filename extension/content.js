@@ -27,6 +27,7 @@
 
   //   return items;
   // }
+
   function parseCartItems() {
     const items = [];
     document.querySelectorAll('.cart-product.activity_cart_product').forEach((el) => {
@@ -51,6 +52,36 @@
     return items;
   }
 
+  function parseEbay() {
+    const items = [];
+    document.querySelectorAll('.cart-bucket__vendor-list li').forEach((el) => {
+      try {
+        const nameEl = el.querySelector('.item-title a');
+        const priceEl = el.querySelector('.item-price');
+        const qtyEl = el.querySelector('[data-test-id="qty-dropdown"]');
+
+        const name = nameEl?.textContent?.trim() || 'Unknown Item';
+        const price = priceEl ? parseFloat(priceEl.textContent.replace(/[^0-9.]/g, '')) : 0;
+        const qty = qtyEl ? parseInt(qtyEl.value, 10) : 1;
+
+        const origin = 'USA';
+        const weightKg = 0.3 * qty;
+        const weightLbs = +(weightKg * 2.20462).toFixed(2);
+
+        items.push({ name, qty, price, origin, weightKg, weightLbs });
+      } catch (e) {
+        console.error('eBay parse error:', e);
+      }
+    });
+    return items;
+  }
+
+  function getParser() {
+    if (location.hostname.includes('aliexpress')) return parseCartItems;
+    if (location.hostname.includes('ebay')) return parseEbay;
+    return () => [];
+  }
+
   function injectButton() {
     if (document.getElementById('invoice-builder-btn')) return;
 
@@ -71,7 +102,8 @@
     });
 
     btn.addEventListener('click', () => {
-      const items = parseCartItems();
+      const parser = getParser();
+      const items = parser();
 
       const productData = {
         items,
@@ -82,6 +114,8 @@
           email: 'support@myshop.com',
         },
       };
+
+      console.log(productData);
 
       // Сохраняем в chrome.storage
       chrome.storage.local.set({ invoiceData: productData });
