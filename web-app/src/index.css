@@ -1,3 +1,5 @@
+@import 'tailwindcss';
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -78,4 +80,18 @@ td {
 }
 th {
   background: #eee;
+}
+
+input {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #1a1a1a;
+}
+
+textarea {
+  background-color: transparent;
+  border: none;
+  outline: none;
+  color: #1a1a1a;
 }
