@@ -2,41 +2,60 @@
 import { useEffect, useState } from 'react';
 import InvoiceForm from './InvoiceForm';
 
-type Item = { name: string; qty: number; price: number; origin?: string; hsCode?: string };
+interface InvoiceData {
+  items: Array<{
+    name: string;
+    qty: number;
+    price: number;
+    origin: string;
+    weightKg?: number;
+    weightLbs?: number;
+  }>;
+  siteType: string;
+  url: string;
+  timestamp: string;
+  seller?: any;
+}
 
 export default function App() {
-  const [data, setData] = useState<{ seller?: any; items?: Item[] } | null>(null);
+  const [invoiceData, setInvoiceData] = useState<InvoiceData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Попытка 1: query param
-    const q = new URLSearchParams(location.search).get('data');
-    if (q) {
+    const loadDataFromURL = () => {
       try {
-        setData(JSON.parse(decodeURIComponent(q)));
-        return;
-      } catch (e) {
-        console.warn('Failed to parse query param:', e);
-      }
-    }
+        const urlParams = new URLSearchParams(window.location.search);
+        const dataParam = urlParams.get('data');
+        const source = urlParams.get('source');
 
-    // Попытка 2: chrome.storage (если открыт как extension page)
-    if ((window as any).chrome?.storage?.local) {
-      (window as any).chrome.storage.local.get('invoiceData', (res: any) => {
-        if (res?.invoiceData) setData(res.invoiceData);
-      });
-    } else {
-      // fallback: пустой шаблон
-      setData({
-        items: [{ name: 'Sample product', qty: 1, price: 10.0, origin: 'China' }],
-        seller: { company: '', address: '', phone: '', email: '' },
-      });
-    }
+        if (dataParam && source === 'chrome-extension') {
+          const decodedData = decodeURIComponent(dataParam);
+          const parsedData: InvoiceData = JSON.parse(decodedData);
+          setInvoiceData(parsedData);
+          console.log('Data loaded from URL:', parsedData);
+        }
+      } catch (error) {
+        console.error('Error parsing data from URL:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDataFromURL();
   }, []);
 
-  return (
-    <div className="app">
-      <h1>Invoice Builder — Create</h1>
-      {data ? <InvoiceForm initial={data} /> : <div>Loading...</div>}
-    </div>
-  );
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!invoiceData) {
+    return (
+      <div style={{ color: '#000' }}>
+        <h2>No invoice data received</h2>
+        <p>Please go to AliExpress/eBay/Amazon cart page and click "Build Invoice" button</p>
+      </div>
+    );
+  }
+
+  return <InvoiceForm initial={invoiceData} />;
 }
