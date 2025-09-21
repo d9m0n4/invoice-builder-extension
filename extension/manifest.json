@@ -6,7 +6,19 @@
   "permissions": ["storage", "tabs", "scripting"],
   "host_permissions": [
     "*://*.aliexpress.com/*",
+    "*://*.aliexpress.us/*",
+    "*://*.aliexpress.fr/*",
+    "*://*.aliexpress.de/*",
+    "*://*.aliexpress.es/*",
+    "*://*.aliexpress.it/*",
+    "*://*.aliexpress.nl/*",
+    "*://*.aliexpress.pl/*",
     "*://*.aliexpress.ru/*",
+    "*://*.aliexpress.br/*",
+    "*://*.aliexpress.ca/*",
+    "*://*.aliexpress.com.au/*",
+    "*://*.aliexpress.jp/*",
+    "*://*.aliexpress.in/*",
     "*://*.amazon.com/*",
     "*://*.ebay.com/*"
   ],
@@ -17,9 +29,21 @@
     {
       "matches": [
         "*://*.aliexpress.com/*",
+        "*://*.aliexpress.us/*",
+        "*://*.aliexpress.fr/*",
+        "*://*.aliexpress.de/*",
+        "*://*.aliexpress.es/*",
+        "*://*.aliexpress.it/*",
+        "*://*.aliexpress.nl/*",
+        "*://*.aliexpress.pl/*",
         "*://*.aliexpress.ru/*",
-        "*://*.ebay.com/*",
-        "*://*.amazon.com/*"
+        "*://*.aliexpress.br/*",
+        "*://*.aliexpress.ca/*",
+        "*://*.aliexpress.com.au/*",
+        "*://*.aliexpress.jp/*",
+        "*://*.aliexpress.in/*",
+        "*://*.amazon.com/*",
+        "*://*.ebay.com/*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"

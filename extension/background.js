@@ -1,15 +1,17 @@
-// background service worker (Manifest V3)
-chrome.runtime.onMessage.addListener((msg, sender) => {
-  if (msg.type === 'OPEN_INVOICE_APP') {
-    const url = 'http://localhost:5173/create'; // локально при dev
-    // Сохраним данные в chrome.storage и откроем вкладку
-    chrome.storage.local.set({ invoiceData: msg.data }, () => {
-      chrome.tabs.create({ url });
+// background.js
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'OPEN_INVOICE_APP') {
+    const dataStr = encodeURIComponent(JSON.stringify(message.data));
+
+    chrome.tabs.create({
+      url: `http://invoice-builder-242.vercel.app/?data=${dataStr}&source=chrome-extension`,
     });
+
+    sendResponse({ success: true });
+    return true;
   }
 });
 
-// debug helper
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('Invoice Builder background installed');
+  console.log('Invoice Builder extension installed');
 });
