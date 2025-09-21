@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand';
 
 interface Seller {
@@ -33,7 +34,7 @@ interface InvoiceFormState {
   declaration: string;
 
   setField: (field: string, value: any) => void;
-  setNestedField: (parent: string, field: string, value: any) => void;
+  setNestedField: (parent: 'seller' | 'buyer', field: string, value: any) => void;
   initializeForm: (initialData: Partial<InvoiceFormState>) => void;
 }
 
@@ -66,7 +67,7 @@ export const useInvoiceStore = create<InvoiceFormState>((set) => ({
     set((state) => ({
       ...state,
       [parent]: {
-        ...state[parent as keyof InvoiceFormState],
+        ...state[parent],
         [field]: value,
       },
     })),
