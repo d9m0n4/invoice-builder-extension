@@ -1,3 +1,5 @@
+import { useState, useRef, useEffect } from 'react';
+
 interface EditableFieldProps {
   label: string;
   value: string;
@@ -14,39 +16,81 @@ export const EditableField = ({
   type = 'text',
   placeholder,
   minWidth,
-}: EditableFieldProps) => (
-  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px', minHeight: '28px' }}>
-    {label && (
-      <span style={{ whiteSpace: 'nowrap', marginRight: '5px', lineHeight: '28px' }}>{label}:</span>
-    )}
-    {type === 'textarea' ? (
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
+}: EditableFieldProps) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const divRef = useRef<HTMLDivElement>(null);
+
+  const handleBlur = () => {
+    setIsEditing(false);
+    if (divRef.current) {
+      onChange(divRef.current.textContent || '');
+    }
+  };
+
+  const handleFocus = () => {
+    setIsEditing(true);
+  };
+
+  useEffect(() => {
+    if (divRef.current && divRef.current.textContent !== value) {
+      divRef.current.textContent = value;
+    }
+  }, [value]);
+
+  return (
+    <div
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        marginBottom: '5px',
+      }}>
+      {label && (
+        <span
+          style={{
+            whiteSpace: 'nowrap',
+            marginRight: '5px',
+          }}>
+          {label}:
+        </span>
+      )}
+
+      <div
+        ref={divRef}
+        contentEditable
+        onBlur={handleBlur}
+        onFocus={handleFocus}
+        suppressContentEditableWarning={true}
         style={{
-          padding: '8px',
-          borderRadius: '4px',
-          minHeight: '60px',
-          width: '100%',
-          minWidth: minWidth,
-          resize: 'vertical',
-        }}
-      />
-    ) : (
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder={placeholder}
-        style={{
-          padding: '2px 5px',
+          padding: '4px 8px',
           borderRadius: '3px',
           minWidth: minWidth || '120px',
           flex: 1,
-          height: '28px',
+          border: isEditing ? '1px solid #007bff' : '1px solid transparent',
+          minHeight: type === 'textarea' ? '60px' : '28px',
+          fontFamily: 'inherit',
+          fontSize: 'inherit',
+          outline: 'none',
+          backgroundColor: isEditing ? '#fff' : 'transparent',
+          cursor: 'text',
+          ...(type === 'textarea' && {
+            whiteSpace: 'pre-wrap',
+            wordWrap: 'break-word',
+            overflowWrap: 'break-word',
+          }),
         }}
+        {...(placeholder && !value && { 'data-placeholder': placeholder })}
       />
-    )}
-  </div>
-);
+
+      {/* CSS для placeholder */}
+      <style>
+        {`
+          [data-placeholder]:empty:before {
+            content: attr(data-placeholder);
+            color: #999;
+            font-style: italic;
+          }
+        `}
+      </style>
+    </div>
+  );
+};
