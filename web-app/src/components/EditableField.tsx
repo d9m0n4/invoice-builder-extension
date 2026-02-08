@@ -66,7 +66,7 @@ export const EditableField = ({
           minWidth: minWidth || '120px',
           flex: 1,
           border: isEditing ? '1px solid #007bff' : '1px solid transparent',
-          minHeight: type === 'textarea' ? '60px' : '28px',
+          minHeight: type === 'textarea' ? '60px' : '24px',
           fontFamily: 'inherit',
           fontSize: 'inherit',
           outline: 'none',

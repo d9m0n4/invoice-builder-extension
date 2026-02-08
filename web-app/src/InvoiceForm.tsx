@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useRef } from 'react';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import html2pdf from 'html2pdf.js';
 import { SaveToPdfButton } from './components/SaveToPDFButton';
 import { EditableField } from './components/EditableField';
 import { InfoSection } from './components/InfoSection';
@@ -23,22 +22,23 @@ export default function InvoiceForm({ initial }: any) {
   } = useInvoiceStore();
 
   useEffect(() => {
-    if (initial) {
-      initializeForm(initial);
-    }
+    if (initial) initializeForm(initial);
   }, [initial, initializeForm]);
 
-  const handleSavePdf = async () => {
+  const handleSavePdf = () => {
     if (!printRef.current) return;
     const el = printRef.current;
-    const canvas = await html2canvas(el, { scale: 2 });
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgProps = (pdf as any).getImageProperties(imgData);
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('commercial-invoice.pdf');
+
+    const opt = {
+      margin: 5, // мм
+      filename: 'commercial-invoice.pdf',
+      image: { type: 'png', quality: 1 },
+      html2canvas: { scale: 2, logging: true, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'], avoid: 'tr, .no-break' },
+    };
+
+    html2pdf().set(opt).from(el).save();
   };
 
   return (
@@ -53,27 +53,20 @@ export default function InvoiceForm({ initial }: any) {
           color: '#000',
           maxWidth: '800px',
           margin: '0 auto',
-          border: '1px solid #ddd',
         }}>
         <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>COMMERCIAL INVOICE</h2>
 
-        {/* Invoice Number and Date */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
           <div>
             <EditableField
               label="Invoice No"
               value={invoiceNumber}
-              onChange={(value) => setField('invoiceNumber', value)}
+              onChange={(v) => setField('invoiceNumber', v)}
             />
-            <EditableField
-              label="Date"
-              value={date}
-              onChange={(value) => setField('date', value)}
-            />
+            <EditableField label="Date" value={date} onChange={(v) => setField('date', v)} />
           </div>
         </div>
 
-        {/* Seller and Buyer Sections */}
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
           <InfoSection
             title="SHIPPER / SELLER"
@@ -104,7 +97,6 @@ export default function InvoiceForm({ initial }: any) {
               },
             ]}
           />
-
           <InfoSection
             title="CONSIGNEE / BUYER"
             fields={[
@@ -145,23 +137,20 @@ export default function InvoiceForm({ initial }: any) {
           <EditableField
             label=""
             value={declaration}
-            onChange={(value) => setField('declaration', value)}
+            onChange={(v) => setField('declaration', v)}
             type="textarea"
           />
-
           <div style={{ marginTop: '40px' }}>Signature: ___________________</div>
-
           <EditableField
             label="Title"
             value={seller.title}
-            onChange={(value) => setNestedField('seller', 'title', value)}
+            onChange={(v) => setNestedField('seller', 'title', v)}
             minWidth="150px"
           />
-
           <EditableField
             label="Date"
             value={date}
-            onChange={(value) => setField('date', value)}
+            onChange={(v) => setField('date', v)}
             minWidth="100px"
           />
         </div>
