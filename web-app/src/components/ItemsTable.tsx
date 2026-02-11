@@ -1,23 +1,6 @@
-interface Price {
-  value: number;
-  currency: string;
-  raw: string;
-}
+import type { TableItem } from '../types/invoiceTable';
 
-interface ItemsTableProps {
-  items: Array<{
-    name: string;
-    qty: number;
-    price: Price | null;
-    origin: string;
-    weight?: number;
-    hsCode?: string;
-  }>;
-}
-
-export const ItemsTable = ({ items }: ItemsTableProps) => {
-  console.log(items);
-
+export const ItemsTable = ({ items }: { items: TableItem[] }) => {
   const total = items.reduce((sum, it) => sum + it.qty * (it.price?.value || 0), 0);
 
   const weight = items.reduce((sum, it) => sum + (it.weight || 0.3) * it.qty, 0);

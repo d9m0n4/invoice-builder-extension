@@ -15,7 +15,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const dataStr = encodeURIComponent(JSON.stringify(message.data));
 
     chrome.tabs.create({
-      url: `http://localhost:5173/?data=${dataStr}&source=chrome-extension`,
+      url: `http://invoice-builder-242.vercel.app/?data=${dataStr}&source=chrome-extension`,
     });
 
     sendResponse({ success: true });

@@ -32,11 +32,11 @@ export default function InvoiceForm({ initial }: any) {
     const opt = {
       margin: 5, // мм
       filename: 'commercial-invoice.pdf',
-      image: { type: 'png', quality: 1 },
+      image: { type: '', quality: 1 },
       html2canvas: { scale: 2, logging: true, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'], avoid: 'tr, .no-break' },
-    };
+    } as any;
 
     html2pdf().set(opt).from(el).save();
   };

@@ -1,3 +1,4 @@
+import type { TableItem } from './../types/invoiceTable';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand';
 
@@ -16,21 +17,12 @@ interface Buyer {
   phone: string;
 }
 
-interface InvoiceItem {
-  name: string;
-  qty: number;
-  price: number;
-  origin: string;
-  weight?: number;
-  hsCode?: string;
-}
-
 interface InvoiceFormState {
   invoiceNumber: string;
   date: string;
   seller: Seller;
   buyer: Buyer;
-  items: InvoiceItem[];
+  items: TableItem[];
   declaration: string;
 
   setField: (field: string, value: any) => void;
