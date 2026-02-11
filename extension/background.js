@@ -7,7 +7,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: true });
     });
 
-    return true; // ⚠️ обязательно для async
+    return true;
   }
 });
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {

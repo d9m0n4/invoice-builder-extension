@@ -25,20 +25,38 @@ export default function InvoiceForm({ initial }: any) {
     if (initial) initializeForm(initial);
   }, [initial, initializeForm]);
 
-  const handleSavePdf = () => {
+  const handleSavePdf = async () => {
     if (!printRef.current) return;
-    const el = printRef.current;
+
+    const element = printRef.current;
 
     const opt = {
-      margin: 5, // мм
+      margin: 5,
       filename: 'commercial-invoice.pdf',
-      image: { type: '', quality: 1 },
-      html2canvas: { scale: 2, logging: true, useCORS: true },
+      image: { type: 'jpeg', quality: 1 },
+      html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'], avoid: 'tr, .no-break' },
-    } as any;
+    } as const;
 
-    html2pdf().set(opt).from(el).save();
+    const worker = html2pdf().set(opt).from(element);
+
+    const pdf = await worker.toPdf().get('pdf');
+
+    const totalPages = pdf.internal.getNumberOfPages();
+
+    for (let i = 1; i <= totalPages; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(10);
+      pdf.text(
+        `${i}`,
+        pdf.internal.pageSize.getWidth() / 2,
+        pdf.internal.pageSize.getHeight() - 5,
+        { align: 'center' },
+      );
+    }
+
+    pdf.save('commercial-invoice.pdf');
   };
 
   return (
